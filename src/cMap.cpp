@@ -182,10 +182,22 @@ namespace MultiColSLAM
                f.write((char*)&kp.response, sizeof(kp.response));
                f.write((char*)&kp.octave, sizeof(kp.octave));
 
-               vector<cv::Mat> vdes = kf->GetAllDescriptors();
-               //f.write((char*)&vdes[i].cols, sizeof(vdes[i],cols));
-               //for(int j = 0; j < vdes[i],cols; j++)
-                  // f.write((char*)&vdes[i].at<j>)
+               vector<cv::Mat> vDescriptors = kf->GetAllDescriptors();
+               for (int c = 0; c < 3; c++)
+               {
+                   f.write((char*)&vDescriptors[c].cols, sizeof(vDescriptors[c].cols));
+                   for(int j = 0; j < vDescriptors[c].cols; j++)
+                       f.write((char*)&vDescriptors[c].at<unsigned char>(i, j), sizeof(char));
+               }
+
+               unsigned long int mnIdx;
+               cMapPoint* mp = kf->GetMapPoint(i);
+               if (mp == NULL  )
+                   mnIdx = ULONG_MAX;
+//               else
+//                   mnIdx = mmpnMapPointsIdx[mp];
+
+               f.write((char*)&mnIdx, sizeof(mnIdx));
 
            }
     }
